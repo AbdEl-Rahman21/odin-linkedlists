@@ -1,10 +1,10 @@
-require_relative "./node.rb"
+# frozen_string_literal: true
+
+require_relative './node'
 
 class LinkedList
   def initialize
-    @head = nil
-    @tail = nil
-    @size = 0
+    setup
   end
 
   def append(value)
@@ -13,7 +13,7 @@ class LinkedList
       @tail = @head
     else
       @tail.next_node = Node.new(value)
-      @tail = @head.next_node
+      @tail = @tail.next_node
     end
 
     @size += 1
@@ -30,9 +30,7 @@ class LinkedList
     @size += 1
   end
 
-  def size
-    @size
-  end
+  attr_reader :size
 
   def head
     @head.value
@@ -43,20 +41,22 @@ class LinkedList
   end
 
   def at(index)
+    return nil unless index < @size
+
     i = 0
     node = @head
 
     loop do
-      if i == index
-        return node.value
-      else
-        node = node.next_node
-        i += 1
-      end
+      return node.value if i == index
+
+      node = node.next_node
+      i += 1
     end
   end
 
   def pop
+    return setup if @head.next_node.nil?
+
     node = @head
 
     loop do
@@ -64,6 +64,7 @@ class LinkedList
         node.next_node = nil
         @tail = node
         @size -= 1
+
         break
       else
         node = node.next_node
@@ -71,20 +72,23 @@ class LinkedList
     end
   end
 
+  def shift
+    @head = @head.next_node
+    @size -= 1
+  end
+
   def contains?(value)
     i = 0
     node = @head
 
     while i < @size
-      if node.value == value
-        return true
-      else
-        node = node.next_node
-        i += 1
-      end
+      return true if node.value == value
+
+      node = node.next_node
+      i += 1
     end
 
-    return false
+    false
   end
 
   def find(value)
@@ -92,15 +96,13 @@ class LinkedList
     node = @head
 
     while i < @size
-      if node.value == value
-        return i
-      else
-        node = node.next_node
-        i += 1
-      end
+      return i if node.value == value
+
+      node = node.next_node
+      i += 1
     end
 
-    return nil
+    nil
   end
 
   def to_s
@@ -114,16 +116,19 @@ class LinkedList
       i += 1
     end
 
-    puts "nil"
+    puts 'nil'
   end
 
   def insert_at(value, index)
+    return unless handle_index_insert?(value, index)
+
     i = 0
     node = @head
 
-    while i < @size
+    loop do
       if i == index - 1
         node.next_node = Node.new(value, node.next_node)
+
         break
       else
         node = node.next_node
@@ -133,13 +138,15 @@ class LinkedList
   end
 
   def remove_at(index)
+    return unless handle_index_remove?(index)
+
     i = 0
     node = @head
 
-    while i < @size
+    loop do
       if i == index - 1
-        temp = node.next_node
-        node.next_node = temp.next_node
+        _, node.next_node = node.next_node, _.next_node
+
         break
       else
         node = node.next_node
@@ -147,32 +154,48 @@ class LinkedList
       end
     end
   end
+
+  private
+
+  def setup
+    @head = nil
+    @tail = nil
+    @size = 0
+  end
+
+  def handle_index_insert?(value, index)
+    if index > @size
+      puts 'Error: Invalid index.'
+
+      return false
+    elsif index == @size
+      append(value)
+
+      return false
+    elsif index.zero?
+      prepend(value)
+
+      return false
+    end
+
+    true
+  end
+
+  def handle_index_remove?(index)
+    if index >= @size
+      puts 'Error: Invalid index.'
+
+      return false
+    elsif index.zero?
+      shift
+
+      return false
+    elsif index == @size - 1
+      pop
+
+      return false
+    end
+
+    true
+  end
 end
-
-a = LinkedList.new
-
-a.append(3)
-
-a.append(4)
-
-a.prepend(2)
-
-a.prepend(1)
-
-puts "Size: #{a.size} \t Head: #{a.head} \t Tail: #{a.tail}"
-
-p a.at(1)
-
-p a.pop
-
-p a.contains?(4)
-
-p a.find(3)
-
-a.to_s
-
-p a.insert_at(100, 2)
-
-p a.remove_at(2)
-
-p a
