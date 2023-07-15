@@ -105,6 +105,29 @@ class LinkedList
     nil
   end
 
+  def reverse(node = @head)
+    return nil if @size.zero?
+    return @tail if node.next_node.nil?
+
+    pre = reverse(node.next_node)
+
+    node.next_node = nil
+
+    loop do
+      if pre.next_node.nil?
+        p pre.next_node = node
+
+        break
+      end
+
+      pre = pre.next_node
+    end
+
+    @head, @tail = @tail, @head if @head.next_node.nil?
+
+    node
+  end
+
   def to_s
     i = 0
     node = @head
@@ -199,3 +222,19 @@ class LinkedList
     true
   end
 end
+
+a=LinkedList.new
+
+a.append(1)
+
+a.append(2)
+
+a.append(3)
+
+a.append(4)
+
+a.to_s
+
+a.reverse
+
+a.to_s
