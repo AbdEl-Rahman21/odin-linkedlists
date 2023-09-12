@@ -1,6 +1,6 @@
 # Linked Lists
 
-The first of three project for the [The Odin Project](https://www.theodinproject.com/lessons/ruby-linked-lists) Computer Science course.
+The first of three projects for the [The Odin Project](https://www.theodinproject.com/lessons/ruby-linked-lists) Computer Science course.
 
 ## Description
 
